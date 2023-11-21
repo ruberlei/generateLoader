@@ -34,3 +34,9 @@ Observação: Caso utilize Windows para gerar o script e execute o .sh gerado no
 ```
 sed -i -e 's/\r$//' arquivo_gerado.sh
 ```
+
+Exemplo de uso:
+
+```
+python.exe .\genLoader.py "randomperson 5 teste.csv" "HR/HR@192.168.0.22:1521/pdb"
+```

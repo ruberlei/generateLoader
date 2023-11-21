@@ -12,6 +12,10 @@ import unidecode
 import numpy as np
  
 fileName = sys.argv[1]
+
+conn = sys.argv[2]
+
+
 fileNameBase = fileName.replace(" ", "_")[:-4]
 
 df = pd.read_csv(fileName)
@@ -83,11 +87,11 @@ def generateLoader(fileName):
     writeFile(genLoader, fileNameBase+'.ctl') 
     
 def generateSqlPlusExec(sqlCommand):
-    connectString = 'sqlplus HR/HR@192.168.0.22:1521/pdb @' + sqlCommand
+    connectString = 'sqlplus ' + conn + ' @' + sqlCommand
     return connectString
     
 def generateLoaderExec():
-    generateLoaderSQL = 'sqlldr HR/HR@192.168.0.22:1521/pdb control='+fileNameBase+'.ctl ' + 'log=' + fileNameBase + '.log'
+    generateLoaderSQL = 'sqlldr '  + conn + ' control='+fileNameBase+'.ctl ' + 'log=' + fileNameBase + '.log'
     return generateLoaderSQL
 
 def generateSh():
