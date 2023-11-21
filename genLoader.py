@@ -1,5 +1,5 @@
 #-- -----------------------------------------------------------------------------------
-#-- File Name    : genLoder.py
+#-- File Name    : genLoader.py
 #-- Author       : Ruberlei Cardoso Bento
 #-- Description  : Generate Loader scripts.
 #-- Call Syntax  : genLoader.py filename.csv
