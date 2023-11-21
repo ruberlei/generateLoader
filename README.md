@@ -26,5 +26,11 @@ Entre no diretório do projeto
 Instale os requerimentos.
 
 ```bash
-  pip3 install -R requirements.txt
+  pip install -R requirements.txt
+```
+
+Observação: Caso utilize Windows para gerar o script e execute o .sh gerado no Linux é preciso executar o comando abaixo:
+
+```
+sed -i -e 's/\r$//' arquivo_gerado.sh
 ```

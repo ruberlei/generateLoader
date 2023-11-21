@@ -1,15 +1,18 @@
+#-- -----------------------------------------------------------------------------------
+#-- File Name    : genLoder.py
+#-- Author       : Ruberlei Cardoso Bento
+#-- Description  : Generate Loader scripts.
+#-- Call Syntax  : genLoader.py filename.csv
+#-- Last Modified: 21/11/2023 
+#-- -----------------------------------------------------------------------------------
+
+import sys
 import pandas as pd
 import unidecode
 import numpy as np
  
-#https://stackoverflow.com/questions/50339065/how-to-get-maximum-length-of-each-column-in-the-data-frame-using-pandas-python
-#df2 = df[[x for x in df if df[x].dtype == 'object']]
-#max_length_in_each_col = df2.applymap(lambda x: len(x)).max()
-#print(max_length_in_each_col)
-
-
-fileName = 'randomperson.csv'
-fileNameBase = fileName[:-4]
+fileName = sys.argv[1]
+fileNameBase = fileName.replace(" ", "_")[:-4]
 
 df = pd.read_csv(fileName)
 
@@ -27,11 +30,21 @@ def getColumnDtypes(dataTypes):
     return dataList
 
 def createTable():
-    createTable = "set echo on\n"
-    createTable = createTable + "set timing on\n"
-    createTable = createTable + "set serveroutput on size unlimited\n"
-    createTable = createTable + 'create table @tableName (@columns);\n'
-    createTable = createTable + 'exit;'
+
+    createTable = ("""set echo on
+set timing on
+set serveroutput on size unlimited
+declare v_count number;
+begin
+    select count(1) into v_count from user_tables where table_name = upper('@tableName');
+    if v_count = 0 then
+        execute immediate 'create table @tableName (@columns)';
+    else
+        dbms_output.put_line('Table exists');
+    end if;
+end;
+/
+exit;""")
     
     columns = ''
 
@@ -44,9 +57,10 @@ def createTable():
         columns = columns + ''.join(letter for letter in df.columns[i].lower() if letter.isalnum()) + ' ' + columnDataType[i] + '('+ str(res1[i])  + '), '
   
     columns = unidecode.unidecode(columns[:-2])
-        
+
     createTable = createTable.replace('@columns', columns)
     createTable = createTable.replace('@tableName', unidecode.unidecode(fileNameBase))
+
     writeFile(createTable, fileNameBase+'.sql') 
 
 def generateLoader(fileName):
@@ -77,13 +91,13 @@ def generateLoaderExec():
     return generateLoaderSQL
 
 def generateSh():
-    sh = '#!/bin/bash\n'
+    sh = "#!/bin/bash\n"
     sh = sh + generateSqlPlusExec(fileNameBase+'.sql')
     sh = sh + '\n' + generateLoaderExec()
     writeFile(sh, fileNameBase + '.sh')
 
 def writeFile(content, fileName):
-    file = open(fileName, "w",encoding='utf-8')  # write mode
+    file = open(fileName, "w",encoding='utf-8') # write mode
     file.write(content)
     file.close()
 
@@ -92,8 +106,4 @@ def genFiles():
     generateSh()
     generateLoader(fileName)
     
-genFiles()
-
-
-
-
+genFiles() 
